@@ -1,15 +1,18 @@
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 use std::path::Path;
 
+// TODO(dmiller): be able to execute a program
+// be able to capture output
+// be able to compare output
+// be able to store output in a file
+// be able to write a unit test
+// clean up outdated output files (if you change a command)
+
 fn watch<P: AsRef<Path>>(path: P) -> notify::Result<()> {
     let (tx, rx) = std::sync::mpsc::channel();
 
-    // Automatically select the best implementation for your platform.
-    // You can also access each implementation directly e.g. INotifyWatcher.
     let mut watcher: RecommendedWatcher = Watcher::new_immediate(move |res| tx.send(res).unwrap())?;
 
-    // Add a path to be watched. All files and directories at that path and
-    // below will be monitored for changes.
     watcher.watch(path, RecursiveMode::Recursive)?;
 
     for res in rx {
