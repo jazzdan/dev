@@ -1,13 +1,13 @@
-use watchexec::run::watch;
+use notify::{RecommendedWatcher, RecursiveMode, Result, Watcher};
 
-mod watch;
+fn main() -> Result<()> {
+    let mut watcher: RecommendedWatcher = Watcher::new_immediate(|res| match res {
+        Ok(event) => println!("event: {:?}", event),
+        Err(e) => println!("watch error: {:?}", e),
+    })?;
 
-fn main() {
-    let my_handler = watch::DevHandler {};
-    let w = watch(&my_handler);
-    let w = match w {
-        Ok(_f) => "Success",
-        Err(error) => panic!("Error watching: {:?}", error),
-    };
-    println!("{:?}", w);
+    watcher.watch(".", RecursiveMode::Recursive)?;
+    println!("Hello world");
+
+    Ok(())
 }
